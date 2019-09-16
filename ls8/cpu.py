@@ -2,6 +2,9 @@
 
 import sys
 
+HLT = 0b00000001
+LDI = 0b10000010
+PRN = 0b01000111
 class CPU:
     """Main CPU class."""
 
@@ -11,12 +14,14 @@ class CPU:
         self.ram = [0] * 256
         #and 8 general-purpose registers.
         self.reg = [0] * 8
+        #stores program counter
+        self.PC = self.reg[0]
     
-    def ram_read(self, address)
+    def ram_read(self, address):
         #ram_read() should accept the address to read and return the value stored there.
         return self.ram_read[address]
     
-    def ram_write(self, value, address)
+    def ram_write(self, value, address):
         #raw_write() should accept a value to write, and the address to write it to.
         self.ram[address] = value
 
@@ -73,4 +78,27 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        pass
+        #setting operand a and b
+        operand_a = self.ram[self.PC + 1]
+        operand_b = self.ram[self.PC + 2]
+        running = True
+        while running:
+            #if-else cascade for actions
+            IR = self.ram[self.PC]
+            if IR == HLT:
+                #halt the program if instruction register matches halt value
+                running = False
+            elif IR == LDI:
+                #set value of instruction register to integer
+                self.reg[operand_a] = operand_b
+                self.PC += 2
+            elif IR == PRN:
+                #print the value at instruction register
+                print(self.reg[operand_a])
+                self.PC += 1
+            else:
+                #handle error
+                print("Unknown command")
+                sys.exit(1)
+            self.PC += 1
+
