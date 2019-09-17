@@ -5,6 +5,7 @@ import sys
 HLT = 0b00000001
 LDI = 0b10000010
 PRN = 0b01000111
+MUL = 0b10100010
 class CPU:
     """Main CPU class."""
 
@@ -50,6 +51,9 @@ class CPU:
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
         #elif op == "SUB": etc
+        elif op == "MUL":
+            self.reg[reg_a] = (self.reg[reg_a]) * (self.reg[reg_b])
+            return 2
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -75,13 +79,13 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        #setting operand a and b
-        operand_a = self.ram[self.PC + 1]
-        operand_b = self.ram[self.PC + 2]
         running = True
         while running:
             #if-else cascade for actions
             IR = self.ram[self.PC]
+            #setting operand a and b
+            operand_a = self.ram[self.PC + 1]
+            operand_b = self.ram[self.PC + 2]            
             if IR == HLT:
                 #halt the program if instruction register matches halt value
                 running = False
@@ -93,6 +97,8 @@ class CPU:
                 #print the value at instruction register
                 print(self.reg[operand_a])
                 self.PC += 1
+            elif IR == MUL:
+                self.PC += self.alu("MUL", operand_a, operand_b)
             else:
                 #handle error
                 print("Unknown command")
