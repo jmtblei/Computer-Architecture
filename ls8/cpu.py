@@ -25,10 +25,17 @@ class CPU:
         #raw_write() should accept a value to write, and the address to write it to.
         self.ram[address] = value
 
-    def load(self):
+    def load(self, program):
         """Load a program into memory."""
 
-        address = 0
+        print("Running {program}")
+        try:
+            address = 0
+        except FileNotFoundError:
+            print(f"{program} not found")
+            sys.exit(2)
+        if len(sys.argv) != 2:
+            sys.exit(1)
 
         # For now, we've just hardcoded a program:
 
