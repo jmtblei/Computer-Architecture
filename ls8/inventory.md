@@ -13,10 +13,10 @@ ls8.py:
 - [x] Implement the `HLT` instruction handler
 - [x] Add the `LDI` instruction
 - [x] Add the `PRN` instruction
-- [ ] Un-hardcode the machine code
-- [ ] Implement the `load()` function to load an `.ls8` file given the filename
+- [x] Un-hardcode the machine code
+- [x] Implement the `load()` function to load an `.ls8` file given the filename
       passed in as an argument
-- [ ] Implement a Multiply instruction (run `mult8.ls8`)
+- [x] Implement a Multiply instruction (run `mult8.ls8`)
 - [ ] Implement the System Stack and be able to run the `stack.ls8` program
 - [ ] Implement the CALL and RET instructions
 - [ ] Implement Subroutine Calls and be able to run the `call.ls8` program
