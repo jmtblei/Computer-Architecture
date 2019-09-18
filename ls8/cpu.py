@@ -17,6 +17,12 @@ class CPU:
         self.reg = [0] * 8
         #stores program counter
         self.PC = self.reg[0]
+        self.commands = {
+            0b00000001: self.hlt,
+            0b10000010: self.ldi,
+            0b01000111: self.prn,
+            0b10100010: self.mul
+        }
     
     def ram_read(self, address):
         #ram_read() should accept the address to read and return the value stored there.
@@ -25,6 +31,24 @@ class CPU:
     def ram_write(self, value, address):
         #raw_write() should accept a value to write, and the address to write it to.
         self.ram[address] = value
+    
+    def hlt(self, operand_a, operand_b):
+        return (0, False)
+
+    def ldi(self, operand_a, operand_b):
+        # Sets register to value
+        self.reg[operand_a] = operand_b
+        return (3, True)
+
+    def prn(self, operand_a, operand_b):
+        # print the value at a register
+        print(self.reg[operand_a])
+        return (2, True)
+
+    def mul(self, operand_a, operand_b):
+        # Multiply two values and store in first register
+        self.alu("MUL", operand_a, operand_b)
+        return (3, True)
 
     def load(self, program):
         """Load a program into memory."""
@@ -86,22 +110,14 @@ class CPU:
             #setting operand a and b
             operand_a = self.ram[self.PC + 1]
             operand_b = self.ram[self.PC + 2]            
-            if IR == HLT:
+            try:
                 #halt the program if instruction register matches halt value
-                running = False
-            elif IR == LDI:
+                operation_output = self.commands[IR](operand_a, operand_b)
                 #set value of instruction register to integer
-                self.reg[operand_a] = operand_b
-                self.PC += 2
-            elif IR == PRN:
-                #print the value at instruction register
-                print(self.reg[operand_a])
-                self.PC += 1
-            elif IR == MUL:
-                self.PC += self.alu("MUL", operand_a, operand_b)
-            else:
+                running = operation_output[1]
+                self.PC += operation_output[0]
+            except:
                 #handle error
                 print("Unknown command")
                 sys.exit(1)
-            self.PC += 1
 
