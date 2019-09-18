@@ -6,6 +6,8 @@ HLT = 0b00000001
 LDI = 0b10000010
 PRN = 0b01000111
 MUL = 0b10100010
+POP = 0b01000110
+PUSH = 0b01000101
 class CPU:
     """Main CPU class."""
 
@@ -17,16 +19,24 @@ class CPU:
         self.reg = [0] * 8
         #stores program counter
         self.PC = self.reg[0]
+        #stores a flag
+        self.FL = self.reg[4]
+        #stores stack pointer
+        self.SP = self.reg[7]
+        #run stack from 244-255
+        self.SP = 244
         self.commands = {
             0b00000001: self.hlt,
             0b10000010: self.ldi,
             0b01000111: self.prn,
-            0b10100010: self.mul
+            0b10100010: self.mul,
+            0b01000110: self.pop,
+            0b01000101: self.push
         }
     
     def ram_read(self, address):
         #ram_read() should accept the address to read and return the value stored there.
-        return self.ram_read[address]
+        return self.ram[address]
     
     def ram_write(self, value, address):
         #raw_write() should accept a value to write, and the address to write it to.
@@ -36,19 +46,37 @@ class CPU:
         return (0, False)
 
     def ldi(self, operand_a, operand_b):
-        # Sets register to value
+        #sets register to value
         self.reg[operand_a] = operand_b
         return (3, True)
 
     def prn(self, operand_a, operand_b):
-        # print the value at a register
+        #print the value at a register
         print(self.reg[operand_a])
         return (2, True)
 
     def mul(self, operand_a, operand_b):
-        # Multiply two values and store in first register
+        #multiply two values and store in first register
         self.alu("MUL", operand_a, operand_b)
         return (3, True)
+    
+    def pop(self, operand_a, operand_b):
+        #get value from memory at stack pointer
+        value = self.ram_read(self.SP)
+        #write value to indicated spot in register
+        self.reg[operand_a] = value
+        #increment SP to next spot in stack memory
+        self.SP += 1
+        return (2, True)
+    
+    def push(self, operand_a, operand_b):
+        #decrement SP to next spot in stack memory
+        self.SP -= 1
+        #get value from indicated spot in register
+        value = self.reg[operand_a]
+        #write value to RAM at SP
+        self.ram_write(value, self.SP)
+        return(2, True)
 
     def load(self, program):
         """Load a program into memory."""
@@ -108,8 +136,8 @@ class CPU:
             #if-else cascade for actions
             IR = self.ram[self.PC]
             #setting operand a and b
-            operand_a = self.ram[self.PC + 1]
-            operand_b = self.ram[self.PC + 2]            
+            operand_a = self.ram_read(self.PC + 1)
+            operand_b = self.ram_read(self.PC + 2)            
             try:
                 #halt the program if instruction register matches halt value
                 operation_output = self.commands[IR](operand_a, operand_b)
