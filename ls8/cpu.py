@@ -8,6 +8,8 @@ PRN = 0b01000111
 MUL = 0b10100010
 POP = 0b01000110
 PUSH = 0b01000101
+CALL = 0b01010000
+RET = 0b00010001
 class CPU:
     """Main CPU class."""
 
@@ -31,7 +33,9 @@ class CPU:
             0b01000111: self.prn,
             0b10100010: self.mul,
             0b01000110: self.pop,
-            0b01000101: self.push
+            0b01000101: self.push,
+            0b01010000: self.call,
+            0b00010001: self.ret
         }
     
     def ram_read(self, address):
@@ -77,6 +81,19 @@ class CPU:
         #write value to RAM at SP
         self.ram_write(value, self.SP)
         return(2, True)
+
+    def call(self, operand_a, operand_b):
+        self.SP -= 1
+        #set memory at register SP to instruction to return to next instruction after call
+        self.ram[self.reg[self.SP]] = self.PC + 2
+        #set the PC to where the subroutine is in the register (the value at that register)
+        self.PC = self.reg[operand_a]
+    
+    def ret(self, operand_a, operand_b):
+        # set PC to return instruction from stack
+        value = self.ram_read(self.SP)
+        self.PC = value
+        self.SP += 1
 
     def load(self, program):
         """Load a program into memory."""
