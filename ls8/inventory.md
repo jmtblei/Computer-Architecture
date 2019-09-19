@@ -17,6 +17,6 @@ ls8.py:
 - [x] Implement the `load()` function to load an `.ls8` file given the filename
       passed in as an argument
 - [x] Implement a Multiply instruction (run `mult8.ls8`)
-- [ ] Implement the System Stack and be able to run the `stack.ls8` program
-- [ ] Implement the CALL and RET instructions
-- [ ] Implement Subroutine Calls and be able to run the `call.ls8` program
+- [x] Implement the System Stack and be able to run the `stack.ls8` program
+- [x] Implement the CALL and RET instructions
+- [x] Implement Subroutine Calls and be able to run the `call.ls8` program
